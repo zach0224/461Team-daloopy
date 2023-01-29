@@ -1,16 +1,27 @@
-use std::io;
+use std::env;
 
 fn main() {
-    let mut input = String::new();
+    let args: Vec<String> = env::args().collect(); //returns an iterator
 
-    println!("Enter input:");
+    let run = &args[1]; //store the "run" string
+    let task = &args[2]; //stores what instruction will be run
 
-    match io::stdin().read_line(&mut input){
-        Ok(_) => {
-            println!("You said: {}", input);
-        },
-        Err(e) => println!("Something went wrong: {}", e)
+    println!("command inserted {}", run);
+    println!("Task to run {}", task);
 
-    };
-
+    match task.as_str(){
+        "install" => install(),
+        "build" => build(),
+        "test" => test(),
+        _ => println!("Error not a valid input"),
+    }
+}
+fn install(){
+    println!("In install");
+}
+fn build(){
+    println!("In build");
+}
+fn test(){
+    println!("In test");
 }
