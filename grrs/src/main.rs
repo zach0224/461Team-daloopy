@@ -27,7 +27,7 @@ fn test(){
     println!("In test");
 }
 
-fn handleFile(urlfile){
+fn handleFile(String: urlfile){
     println!("inside handle URL");
 
     let path = Path::new(urlfile);
@@ -39,6 +39,6 @@ fn handleFile(urlfile){
     };
     
     // parse file
-
+    // https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
 
 }
