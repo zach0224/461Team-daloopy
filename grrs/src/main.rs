@@ -43,7 +43,7 @@ fn handle_file(urlfile:&str){
     // HAVENT TESTED OR INCORPORATED:
     // parse file
     // https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
-    if let Ok(lines) = read_lines("./hosts") {
+    if let Ok(lines) = read_lines(&file) {
         // Consumes the iterator, returns an (Optional) String
         for line in lines {
             if let Ok(ip) = line {
@@ -51,7 +51,6 @@ fn handle_file(urlfile:&str){
             }
         }
     }
-
 }
 
 fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
