@@ -1,5 +1,6 @@
 use std::env;
 use std::path::Path;
+use std::fs::File;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -27,7 +28,7 @@ fn test(){
     println!("In test");
 }
 
-fn handleFile(String: urlfile){
+fn handleFile(urlfile: task){
     println!("inside handle URL");
 
     let path = Path::new(urlfile);
