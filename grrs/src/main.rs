@@ -1,7 +1,7 @@
 use std::env;
 use std::path::Path;
 use std::fs::File;
-use std::io::{self, BufRead};
+use std::io::{BufRead, BufReader};
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -33,28 +33,26 @@ fn handle_file(urlfile:&str){
     println!("inside handle URL");
 
     let path = Path::new(urlfile);
+    let file_result = File::open(path); // Open the path in read-only mode, returns `io::Result<File>`
 
-    // Open the path in read-only mode, returns `io::Result<File>`
-    let file = match File::open(&path) {
-        Err(why) => panic!("couldn't open {}: {}", path.display(), why),
-        Ok(file) => file,
-    };
-    
-    // HAVENT TESTED OR INCORPORATED:
-    // parse file
-    // https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html
-    if let Ok(lines) = read_lines(&file) {
-        // Consumes the iterator, returns an (Optional) String
-        for line in lines {
-            if let Ok(ip) = line {
-                println!("{}", ip);
+    // error handling
+    let _file = match file_result  {
+        Ok(_file) => {
+            let reader = BufReader::new(_file); 
+            for (index, line) in reader.lines().enumerate() {
+                let line = line.unwrap(); // Ignore errors.
+                // Show the line and its number.
+                println!("{}. {}", index + 1, line);
             }
         }
-    }
+        Err(err) => panic!("Problem opening the file: {:?}", err),
+    };
+
+    
+ 
 }
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>, {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
+// let reader_result = BufReader::new(file);
+//let reader = match reader_result{
+//    Ok()
+//}
