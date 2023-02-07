@@ -30,7 +30,7 @@ fn test(){
 }
 
 fn handle_file(urlfile:&str){
-    println!("inside handle URL");
+    //println!("inside handle URL");
 
     let path = Path::new(urlfile);
     let file_result = File::open(path); // Open the path in read-only mode, returns `io::Result<File>`
@@ -42,6 +42,7 @@ fn handle_file(urlfile:&str){
             for (index, line) in reader.lines().enumerate() {
                 let line = line.unwrap(); // Ignore errors.
                 // Show the line and its number.
+                //println!("inside for loop");
                 println!("{}. {}", index + 1, line);
             }
         }
