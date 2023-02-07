@@ -48,12 +48,4 @@ fn handle_file(urlfile:&str){
         }
         Err(err) => panic!("Problem opening the file: {:?}", err),
     };
-
-    
- 
 }
-
-// let reader_result = BufReader::new(file);
-//let reader = match reader_result{
-//    Ok()
-//}
