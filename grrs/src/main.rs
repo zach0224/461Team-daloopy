@@ -2,14 +2,12 @@ use std::env;
 use std::path::Path;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+mod package;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
 
-    let run = &args[1]; //store the "run" string
-    let task = &args[2]; //stores what instruction will be run
-
-    println!("command inserted {}", run);
+    let task = &args[1]; //stores what instruction will be run
     println!("Task to run {}", task);
 
     match task.as_str(){
