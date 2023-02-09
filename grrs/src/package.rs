@@ -8,11 +8,8 @@ pub struct Package {
     pub url: URL // change later to URL type
 }
 
-trait InputPackage {
-    fn print_output(self);
-}
 
-impl InputPackage for Package {
+impl Package {
     
     fn print_output(self) { 
         println!("URL {}", self.url);
@@ -22,6 +19,8 @@ impl InputPackage for Package {
         println!("License Compatibility {}", self.license);
     }
 }
+
+
 
 pub struct URL {
     pub url: String,
@@ -45,19 +44,3 @@ impl fmt::Display for URL {
         write!(f, "{}", self.url)
     }
 }
-
-/*impl Package {
-    //use like constructors
-    pub fn new() -> Package {
-        Package {
-            BusFactor;
-
-        }
-    }
-}*/
-/*
-impl URL{
-    pub fn new(url: String) -> URL{
-        URL {url: url}
-    }
-}*/
