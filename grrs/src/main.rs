@@ -3,6 +3,8 @@ use std::path::Path;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 mod package;
+use package::Package;
+use package::URL;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -51,6 +53,7 @@ fn handle_file(urlfile:&str){
                     license: 0,
                     url: URL: new(line), // send in URL
                 };
+
                 // convert url npm to github (before or after using API?)
 
                 // get content -> use APIs octocrab
