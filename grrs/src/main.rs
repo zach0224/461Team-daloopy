@@ -42,6 +42,26 @@ fn handle_file(urlfile:&str){
                 // Show the line and its number.
                 //println!("inside for loop");
                 println!("{}. {}", index + 1, line);
+
+                // initialize object
+                let obj = Package {
+                    total_score: -1,
+                    bus_factor: -1,
+                    responsiveness: -1,
+                    license: 0,
+                    url: URL: new(line), // send in URL
+                };
+                // convert url npm to github (before or after using API?)
+
+                // get content -> use APIs octocrab
+
+                // call functions
+                // calc_response();
+                // calc_license();
+                // calc_bus_factor();
+                // calc_total_score();
+
+
             }
         }
         Err(err) => panic!("Problem opening the file: {:?}", err),

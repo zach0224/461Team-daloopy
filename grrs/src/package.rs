@@ -3,7 +3,7 @@ pub struct Package {
     bus_factor: i32,
     responsiveness: i32,
     license: bool,
-   //url: String // change later to URL type
+    url: URL // change later to URL type
 }
 
 trait InputPackage {
@@ -13,7 +13,7 @@ trait InputPackage {
 impl InputPackage for Package {
     
     fn print_output(self) { 
-        //println!("URL {}", self.url);
+        println!("URL {}", self.url);
         println!("Total score {}", self.total_score);
         println!("Bus Factor {}", self.bus_factor);
         println!("Responsiveness {}", self.responsiveness);
@@ -53,10 +53,8 @@ impl InputURL for URL {
     }
 }*/
 
-/*impl URL{
-    pub fn new() -> URL{
-        URL{
-            url;
-        }
+impl URL{
+    pub fn new(url: String) -> URL{
+        URL {url: url}
     }
-}*/
+}
