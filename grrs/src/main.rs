@@ -5,7 +5,11 @@ use std::io::{BufRead, BufReader};
 mod package;
 use package::Package;
 use package::URL;
-use octocrab::Octocrab;
+
+// NEW STUFF
+extern crate octocrb;
+use octocrab::(Octocrab, Page, Result, models, params);
+//use octocrab::Octocrab;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -65,13 +69,13 @@ fn handle_file(urlfile:&str){
                 let octocrab = Octocrab::builder().personal_token(token).build();
 
                 let content = octocrab.expect("REASON"); // .expect("REASON") terminal help message 
-                /*
+                
                 .repos("rust-lang", "rust") // error: .repos not recognized
                 .get_content()
                 .send();
                 .await?; */ // only allows in async functions 
         
-                /*
+                
                 println!(
                     "{} files/dirs in the repo root",
                     content.items.into_iter().count()
@@ -91,3 +95,24 @@ fn handle_file(urlfile:&str){
         Err(err) => panic!("Problem opening the file: {:?}", err),
     };
 }
+
+
+// NEW STUFF
+// REST 
+
+// license compatibility -> if license information not available in REST data, parse README & look for "license"
+// - this meets API use and using data from source code repository requirements
+
+// calculate bus factor -> number of contributors and their contribution
+
+// ramp-up time -> # documentation and/or comments
+
+// responsiveness -> 
+
+// correctness -> # issues, if there's unit testing
+
+// Big thing: care more about ranking than about having "correct" scores
+
+
+// we had to forgo converting npm urls to GitHub urls in our implementation. For the user, it would take about 4 seconds using the CLI to convert those links
+// but for the team it would take X hours to implement a conversion that doesn't conduct web-scraping of GitHub. *put table of hours spent by each member each week* 
