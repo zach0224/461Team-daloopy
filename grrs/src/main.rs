@@ -5,6 +5,7 @@ use std::io::{BufRead, BufReader};
 mod package;
 use package::Package;
 use package::URL;
+use octocrab::Octocrab;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -41,8 +42,6 @@ fn handle_file(urlfile:&str){
             let reader = BufReader::new(_file); 
             for (index, line) in reader.lines().enumerate() {
                 let line = line.unwrap(); // Ignore errors.
-                // Show the line and its number.
-                //println!("inside for loop");
                 println!("{}. {}", index + 1, line);
 
                 // initialize object
@@ -55,13 +54,35 @@ fn handle_file(urlfile:&str){
                 };
 
                 // convert url npm to github (before or after using API?)
+                // struct & auth -> tmw office hours Anonya & William 
+                // overloading -> Will
+                // npm to github url -> Jason 
 
-                // get content -> use APIs octocrab
+                // get content -> Dalilah
+                    // get content -> use APIs octocrab (Dalilah) get into 
+                let token = std::env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN env variable is required");
 
+                let octocrab = Octocrab::builder().personal_token(token).build();
+
+                let content = octocrab.expect("REASON"); // .expect("REASON") terminal help message 
+                /*
+                .repos("rust-lang", "rust") // error: .repos not recognized
+                .get_content()
+                .send();
+                .await?; */ // only allows in async functions 
+        
+                /*
+                println!(
+                    "{} files/dirs in the repo root",
+                    content.items.into_iter().count()
+                );
+                */
                 // call functions
-                // calc_response();
+                // calc_response(); 
                 // calc_license();
                 // calc_bus_factor();
+                // calc_rampup();
+                // calc_correctness(); 
                 // calc_total_score();
 
 
