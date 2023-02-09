@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub struct Package {
     pub total_score: i32,
     pub bus_factor: i32,
@@ -13,7 +15,7 @@ trait InputPackage {
 impl InputPackage for Package {
     
     fn print_output(self) { 
-        //println!("URL {}", self.url);
+        println!("URL {}", self.url);
         println!("Total score {}", self.total_score);
         println!("Bus Factor {}", self.bus_factor);
         println!("Responsiveness {}", self.responsiveness);
@@ -22,24 +24,25 @@ impl InputPackage for Package {
 }
 
 pub struct URL {
-    pub url: String
+    pub url: String,
+    pub git_repo_url: String
 }
 
-trait InputURL {
-    //fn find_URL(self) -> String // nmp to github url
+impl URL {
 
-    fn get_url_string(self); // return the url string
-    //fn setUrlString(self) -> // void???
+    pub fn new(url: String) -> URL{
+        URL {url: url, git_repo_url: url}
+    }
+
+    pub fn get_url_string(&self) -> String{
+        println!("url {}", self);
+        self.url
+    }
 }
 
-impl InputURL for URL {
-    //fn find_URL(&self) {
-        //find url and set the url variable to that string
-    //}
-    fn get_url_string(self) {
-        // stuff
-        println!("url {}", self.url);
-
+impl fmt::Display for URL {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.url)
     }
 }
 
