@@ -50,8 +50,8 @@ fn handle_file(urlfile:&str){
                     total_score: -1,
                     bus_factor: -1,
                     responsiveness: -1,
-                    license: 0,
-                    url: URL: new(line), // send in URL
+                    license: false,
+                    url: URL { url: line }, // send in URL
                 };
 
                 // convert url npm to github (before or after using API?)
