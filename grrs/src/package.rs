@@ -4,6 +4,8 @@ pub struct Package {
     pub total_score: i32,
     pub bus_factor: i32,
     pub responsiveness: i32,
+    pub correctness: i32,
+    pub ramp: i32,
     pub license: bool,
     pub url: URL // change later to URL type
 }
@@ -11,12 +13,15 @@ pub struct Package {
 
 impl Package {
     
-    fn print_output(self) { 
-        println!("URL {}", self.url);
-        println!("Total score {}", self.total_score);
-        println!("Bus Factor {}", self.bus_factor);
-        println!("Responsiveness {}", self.responsiveness);
-        println!("License Compatibility {}", self.license);
+    pub fn print_output(self) { 
+        println!("URL from Package:       {}", self.url.get_url_string());
+        println!("Total score:            {}", self.total_score);
+        println!("Bus Factor:             {}", self.bus_factor);
+        println!("Responsiveness:         {}", self.responsiveness);
+        println!("Correctness:            {}", self.correctness);
+        println!("Ramp Up Time:           {}", self.ramp);
+        println!("License Compatibility:  {}", self.license);
+        println!("");
     }
 }
 
@@ -30,12 +35,12 @@ pub struct URL {
 impl URL {
 
     pub fn new(url: String) -> URL{
-        URL {url: url, git_repo_url: url}
+        URL {url: url.clone(), git_repo_url: url.clone()}
     }
 
     pub fn get_url_string(&self) -> String{
-        println!("url {}", self);
-        self.url
+        println!("URL from URL: {}", self);
+        self.url.clone()
     }
 }
 

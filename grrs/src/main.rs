@@ -5,7 +5,6 @@ use std::io::{BufRead, BufReader};
 mod package;
 use package::Package;
 use package::URL;
-use octocrab::Octocrab;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -50,26 +49,20 @@ fn handle_file(urlfile:&str){
                     bus_factor: -1,
                     responsiveness: -1,
                     license: false,
+                    correctness: -1,
+                    ramp: -1,
                     url: URL::new(line), // send in URL
                 };
 
+                obj.print_output()
+                
                 // convert url npm to github (before or after using API?)
                 // struct & auth -> tmw office hours Anonya & William 
                 // overloading -> Will
                 // npm to github url -> Jason 
 
                 // get content -> Dalilah
-                    // get content -> use APIs octocrab (Dalilah) get into 
-                let token = std::env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN env variable is required");
 
-                let octocrab = Octocrab::builder().personal_token(token).build();
-
-                let content = octocrab.expect("REASON"); // .expect("REASON") terminal help message 
-                /*
-                .repos("rust-lang", "rust") // error: .repos not recognized
-                .get_content()
-                .send();
-                .await?; */ // only allows in async functions 
         
                 /*
                 println!(
