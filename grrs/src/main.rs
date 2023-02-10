@@ -7,7 +7,7 @@ use package::Package;
 use package::URL;
 
 // NEW STUFF
-extern crate octocrb;
+extern crate octocrab;
 use octocrab::(Octocrab, Page, Result, models, params);
 //use octocrab::Octocrab;
 
@@ -111,8 +111,10 @@ fn handle_file(urlfile:&str){
 
 // correctness -> # issues, if there's unit testing
 
-// Big thing: care more about ranking than about having "correct" scores
+// Big thing: care more about ranking than about having "correct" scores 
 
 
-// we had to forgo converting npm urls to GitHub urls in our implementation. For the user, it would take about 4 seconds using the CLI to convert those links
-// but for the team it would take X hours to implement a conversion that doesn't conduct web-scraping of GitHub. *put table of hours spent by each member each week* 
+// we had to forgo converting npm urls to GitHub urls in our implementation. For the user, it would take about 4 seconds 
+// using the CLI to convert those links
+// but for the team it would take X hours to implement a conversion that doesn't conduct web-scraping of GitHub. 
+// *put table of hours spent by each member each week* 
