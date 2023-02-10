@@ -1,4 +1,4 @@
-run_URL:
+run:
 	./target/debug/run URLs.txt
 
 build:
