@@ -1,8 +1,8 @@
 import requests
 import os
-from python_graphql_client import GraphqlClient
+from graphqlclient import GraphQLClient
 
-client = GraphqlClient(endpoint="https://api.github.com/graphql")
+client = GraphQLClient(endpoint="https://api.github.com/graphql")
 
 def make_query(after_cursor=None):
     return """
