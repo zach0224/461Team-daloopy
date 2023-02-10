@@ -45,6 +45,7 @@ fn handle_file(urlfile:&str){
                 println!("{}. {}", index + 1, line);
 
                 // initialize object
+                // might not be needed
                 let obj = Package {
                     total_score: -1,
                     bus_factor: -1,
@@ -56,27 +57,24 @@ fn handle_file(urlfile:&str){
                 // convert url npm to github (before or after using API?)
                 // struct & auth -> tmw office hours Anonya & William 
                 // overloading -> Will
+
                 // npm to github url -> Jason 
+                // classes updating (package.rs clean up)
+                // one giant struct with each calculation function (empty)
+                // npm github api in rust (super close)
+                // 
+
+                // graphql in 
+                // 
+
+                // tmw pieceing files together and calc scores
 
                 // get content -> Dalilah
                     // get content -> use APIs octocrab (Dalilah) get into 
-                let token = std::env::var("GITHUB_TOKEN").expect("GITHUB_TOKEN env variable is required");
+                
+                
 
-                let octocrab = Octocrab::builder().personal_token(token).build();
 
-                let content = octocrab.expect("REASON"); // .expect("REASON") terminal help message 
-                /*
-                .repos("rust-lang", "rust") // error: .repos not recognized
-                .get_content()
-                .send();
-                .await?; */ // only allows in async functions 
-        
-                /*
-                println!(
-                    "{} files/dirs in the repo root",
-                    content.items.into_iter().count()
-                );
-                */
                 // call functions
                 // calc_response(); 
                 // calc_license();
@@ -91,3 +89,6 @@ fn handle_file(urlfile:&str){
         Err(err) => panic!("Problem opening the file: {:?}", err),
     };
 }
+
+
+
