@@ -6,6 +6,7 @@ mod package;
 use package::Package;
 use package::URL;
 
+
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
 
@@ -73,6 +74,7 @@ fn handle_file(urlfile:&str){
                 // tmw pieceing files together and calc scores
 
                 // get content -> Dalilah
+
                 // call functions
                 // calc_response(); 
                 // calc_license();
