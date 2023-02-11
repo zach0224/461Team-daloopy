@@ -82,10 +82,6 @@ def getOwnerRepo(url):
   repo = parts[-1]
   repo = repo[:-1]
 
-  print("repo", repo)
-  print("owner", owner)
-
-
   return owner, repo
 
 def getData():
