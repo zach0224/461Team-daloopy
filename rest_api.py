@@ -63,6 +63,8 @@ if response.status_code == 200:
         print("YIPPEE x 3")
         print(decodeStr.split("Licence",1)[1])
 
+    licenses = {"Apache": 0, "Mit": 1, "GNU": 1}
+
 
 else:
     print("Request failed with status code:", response.status_code)
