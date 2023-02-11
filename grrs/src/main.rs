@@ -31,8 +31,6 @@ fn test(){
 }
 
 fn handle_file(urlfile:&str){
-    //println!("inside handle URL");
-
     let path = Path::new(urlfile);
     let file_result = File::open(path); // Open the path in read-only mode, returns `io::Result<File>`
 
