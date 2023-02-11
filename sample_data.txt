@@ -1,0 +1,8 @@
+{
+    'issues': {'open': 311, 'closed': 3784, 'total': 4095},
+    'total_commits': 8005,
+    hasLicense: True,
+    hasWiki: True,
+    hasPages: True,
+    hasDiscussions: True,
+}
