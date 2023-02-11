@@ -21,12 +21,21 @@ token = os.getenv("GITHUB_TOKEN")
 #     with open("data.txt", "w") as file:
 #        file.writelines(repository_dict)
 
-url = "https://github.com/cloudinary/cloudinary_npm"
+#url = "https://github.com/cloudinary/cloudinary_npm"
 
-my_headers = {'Authorization' : 'Bearer {token}'}
-response = requests.get(url, headers=my_headers)
+url = "https://api.github.com/repos/cloudinary/cloudinary_npm"
+headers = {'Authorization': f'Bearer {token}', 'Accept': 'application/json'}
+#my_headers = {'Authorization' : 'Bearer {token}'}
+response = requests.get(url, headers=headers)
 
 # response = requests.get(url, auth=('daloopy', my_var))
 # repository_dict = response.json
 
-print(response.json)
+
+response.raise_for_status()
+
+if response.status_code == 200:
+    print(response.text)
+else:
+    print("Request failed with status code:", response.status_code)
+
