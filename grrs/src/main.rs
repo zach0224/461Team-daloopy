@@ -5,7 +5,6 @@ use std::io::{BufRead, BufReader};
 mod package;
 use package::Package;
 use package::URL;
-use octocrab::Octocrab;
 
 fn main() {
     let args: Vec<String> = env::args().collect(); //returns an iterator
@@ -51,9 +50,13 @@ fn handle_file(urlfile:&str){
                     bus_factor: -1,
                     responsiveness: -1,
                     license: false,
-                    url: URL { url: line }, // send in URL
+                    correctness: -1,
+                    ramp: -1,
+                    url: URL::new(line), // send in URL
                 };
 
+                obj.print_output()
+                
                 // convert url npm to github (before or after using API?)
                 // struct & auth -> tmw office hours Anonya & William 
                 // overloading -> Will
@@ -70,11 +73,6 @@ fn handle_file(urlfile:&str){
                 // tmw pieceing files together and calc scores
 
                 // get content -> Dalilah
-                    // get content -> use APIs octocrab (Dalilah) get into 
-                
-                
-
-
                 // call functions
                 // calc_response(); 
                 // calc_license();
