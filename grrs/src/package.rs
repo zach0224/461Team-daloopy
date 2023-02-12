@@ -9,6 +9,8 @@ use reqwest;
 use serde::{Serialize, Deserialize};
 use serde_json;
 
+use log::{info, debug};
+
 #[derive(Deserialize)]
 pub struct NpmJSON {
     repository:  HashMap<String, String>,
@@ -48,12 +50,12 @@ impl PackageJSON {
     pub fn new(package: &Package) -> PackageJSON {
         PackageJSON {
             URL: package.url.get_url(),
-            NetScore: *package.net_score,
-            RampUp: *package.ramp_up,
-            Correctness: *package.correctness,
-            BusFactor: *package.bus_factor,
-            ResponsiveMaintainer: *package.responsiveness,
-            License: *package.license,
+            NetScore: (*package.net_score * 100.0).round() / 100.0,
+            RampUp: (*package.ramp_up * 100.0).round() / 100.0,
+            Correctness: (*package.correctness * 100.0).round() / 100.0,
+            BusFactor: (*package.bus_factor * 100.0).round() / 100.0,
+            ResponsiveMaintainer: (*package.responsiveness * 100.0).round() / 100.0,
+            License: (*package.license * 100.0).round() / 100.0,
         }
     }
 }
@@ -82,17 +84,17 @@ impl Package {
         }
     }
 
-    pub fn print_output(&self) { 
-        println!("");
-        println!("Package URL:            {}", self.url.get_url());
-        println!("Owner/Repo:             {}", self.url.get_owner_repo());
-        println!("Total score:            {}", self.net_score);
-        println!("Bus Factor:             {}", self.bus_factor);
-        println!("ResponsiveMaintainer:   {}", self.responsiveness);
-        println!("Correctness:            {}", self.correctness);
-        println!("Ramp Up Time:           {}", self.ramp_up);
-        println!("License Compatibility:  {}", self.license);
-        println!("");
+    pub fn debug_output(&self) { 
+        debug!("");
+        debug!("Package URL:            {}", self.url.get_url());
+        debug!("Owner/Repo:             {}", self.url.get_owner_repo());
+        debug!("Total score:            {}", self.net_score);
+        debug!("Bus Factor:             {}", self.bus_factor);
+        debug!("ResponsiveMaintainer:   {}", self.responsiveness);
+        debug!("Correctness:            {}", self.correctness);
+        debug!("Ramp Up Time:           {}", self.ramp_up);
+        debug!("License Compatibility:  {}", self.license);
+        debug!("");
     }
 
     pub fn calc_metrics(&mut self, json_in: &String){
@@ -128,20 +130,24 @@ impl URLHandler {
             static ref GIT_NPM_RE:Regex = Regex::new(r#".+github\.com/(.+).git"#).unwrap();
         }
         if GIT_RE.is_match(url) {
-            println!("{} is a github URL!", url);
+            info!("{} is a github URL!", url);
             let owner_repo = GIT_RE.captures(url).unwrap();
-            println!("{} is the owner repo!", &owner_repo[1]);
+            info!("{} is the owner repo!", &owner_repo[1]);
             (&owner_repo[1]).to_string()
-        } else {
-            println!("{} is NOT a github URL!", url);
+        } else if NPM_RE.is_match(url) {
+            info!("{} is NOT a github URL!", url);
             let cap = NPM_RE.captures(url).unwrap();
             let npm_url = format!("https://registry.npmjs.org/{}", &cap[1]);
             let response = reqwest::blocking::get(npm_url).unwrap();
             let json = response.json::<NpmJSON>().unwrap();
             let git_url_from_npm = json.repository.get("url").unwrap();
+            debug!("Git URL: {}", &git_url_from_npm);
             let owner_repo = GIT_NPM_RE.captures(&git_url_from_npm).unwrap();
-            println!("{} is the owner repo!", &owner_repo[1]);
+            info!("{} is the owner repo!", &owner_repo[1]);
             (&owner_repo[1]).to_string()
+        } else {
+            info!("Supplied URL is not npm or github! Returning Garbage!");
+            "GARBAGE".to_string()
         }
     }
     pub fn get_url(&self) -> String{
@@ -162,12 +168,17 @@ pub fn calc_bus_factor(json: &MetricJSON) -> f32 {
     let total_commits : i32 = json.total_commits;
     let top_contributor_commits : i32 = json.bus_commits;
     let ratio : f32 = top_contributor_commits as f32 / total_commits as f32;
+    debug!("top_contributor_commits: {}", &top_contributor_commits);
+    debug!("total_commits:           {}", &total_commits);
+    debug!("ratio:                   {}", &ratio);
     1.0 - ratio
 }
 
 pub fn calc_responsiveness(json: &MetricJSON) -> f32 {
     let open: i32 = json.open_issues + 50;
     let closed: i32 = json.closed_issues + 50;
+    debug!("open_issues:    {}", &open);
+    debug!("closed_issues:  {}", &closed);
     open as f32 / (open + closed) as f32
 }
 
@@ -176,8 +187,136 @@ pub fn calc_ramp_up_time(json: &MetricJSON) -> f32 {
     let discussions: f32 = (json.has_discussions as i32) as f32;
     let pages:       f32 = (json.has_pages as i32)       as f32;
     let readme:      f32 = (json.has_readme as i32)      as f32;
+    debug!("wiki:         {}", &wiki);
+    debug!("discussions:  {}", &discussions);
+    debug!("pages:        {}", &pages);
+    debug!("readme:       {}", &readme);
     0.25 * wiki + 0.25 * discussions + 0.25 * pages + 0.25 * readme
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_calc_ramp_up_time_fail() {//supposed to fail and fails correctly
+        let metric_json = MetricJSON {
+            has_wiki: true,
+            has_discussions: true,
+            has_pages: false,
+            has_readme: true,
+            license_score: 0.5,
+            open_issues: 20,
+            closed_issues: 20,
+            total_commits: 20,
+            bus_commits: 30,
+            correctness_score: 0.3,
+        };
+        let ramp_up_time = calc_ramp_up_time(&metric_json);
+        assert_ne!(ramp_up_time, 1.0);
+    }
+    #[test]
+    fn test_calc_ramp_up_time_pass() { //supposed to pass and passes correctly
+        let json = MetricJSON {
+            has_wiki: true,
+            has_discussions: false,
+            has_pages: true,
+            has_readme: false,
+            license_score: 0.5,
+            open_issues: 20,
+            closed_issues: 20,
+            total_commits: 20,
+            bus_commits: 30,
+            correctness_score: 0.3,
+        };
+
+        let result = calc_ramp_up_time(&json);
+        assert_eq!(result, 0.5);
+    }
+    #[test]
+    fn test_calc_responsiveness_failing() {
+        let json = MetricJSON {
+            open_issues: 10,
+            closed_issues: 50,
+            total_commits: 20,
+            bus_commits: 30,
+            correctness_score: 0.3,
+            license_score: 0.5,
+            has_wiki: true,
+            has_discussions: false,
+            has_pages: true,
+            has_readme: false,
+        };
+        // This assert will fail because the expected value is not equal to the actual value of 0.375.
+        assert_ne!(calc_responsiveness(&json), 0.4);
+    }
+    #[test]
+    fn test_calc_responsiveness_success() {
+        let json = MetricJSON {
+            open_issues: 100,
+            closed_issues: 200,
+            total_commits: 20,
+            bus_commits: 30,
+            correctness_score: 0.3,
+            license_score: 0.5,
+            has_wiki: true,
+            has_discussions: false,
+            has_pages: true,
+            has_readme: false,
+        };
+        assert_eq!(calc_responsiveness(&json), 0.375);
+    }
+    #[test]
+    fn test_calc_bus_factor_fail() { //should be 0.5
+        let json = MetricJSON {
+            total_commits: 100,
+            bus_commits: 50,
+            open_issues: 100,
+            closed_issues: 200,
+            correctness_score: 0.3,
+            license_score: 0.5,
+            has_wiki: true,
+            has_discussions: false,
+            has_pages: true,
+            has_readme: false,
+        };
+        let result = calc_bus_factor(&json);
+        assert_ne!(result, 2.0);
+    }
+    #[test]
+    fn test_calc_bus_factor_pass() { //should be 0.5
+        let json = MetricJSON {
+            total_commits: 80,
+            bus_commits: 50,
+            open_issues: 100,
+            closed_issues: 200,
+            correctness_score: 0.3,
+            license_score: 0.5,
+            has_wiki: true,
+            has_discussions: false,
+            has_pages: true,
+            has_readme: false,
+        };
+        let result = calc_bus_factor(&json);
+        assert_eq!(result, 0.375);
+    }
+    #[test]
+    fn test_url_handler_github() {
+        let url = "https://github.com/openai/gpt-3".to_string();
+        let handler = URLHandler::new(url.clone());
+        assert_eq!(handler.get_url(), url);
+        assert_eq!(handler.get_owner_repo(), "openai/gpt-3");
+    }
+    #[test]
+    fn test_url_handler_npm() {
+        let url = "https://www.npmjs.com/package/request".to_string();
+        let handler = URLHandler::new(url.clone());
+        assert_eq!(handler.get_url(), url);
+        assert_eq!(handler.get_owner_repo(), "request/request");
+    }
+    
+
+}
+
 
 
 
