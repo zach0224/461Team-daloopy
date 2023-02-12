@@ -203,4 +203,6 @@ def config_logging():
   try:
     logging.basicConfig(filename= "", level=log_level)
   except:
-    logging.basicConfig(filename= "", level=log_level)
+    logging.basicConfig(level=log_level)
+
+config_logging()
