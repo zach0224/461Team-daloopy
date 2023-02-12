@@ -284,6 +284,20 @@ mod tests {
         let result = calc_bus_factor(&json);
         assert_eq!(result, 0.375);
     }
+    #[test]
+    fn test_url_handler_github() {
+        let url = "https://github.com/openai/gpt-3".to_string();
+        let handler = URLHandler::new(url.clone());
+        assert_eq!(handler.get_url(), url);
+        assert_eq!(handler.get_owner_repo(), "openai/gpt-3");
+    }
+    #[test]
+    fn test_url_handler_npm() {
+        let url = "https://www.npmjs.com/package/request".to_string();
+        let handler = URLHandler::new(url.clone());
+        assert_eq!(handler.get_url(), url);
+        assert_eq!(handler.get_owner_repo(), "request/request");
+    }
     
 
 }
