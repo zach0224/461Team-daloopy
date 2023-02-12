@@ -6,7 +6,7 @@ export LOG_LEVEL
 echo $LOG_LEVEL
 
 echo "First argument: $1"
-dependencies=("numpy" "pandas" )
+dependencies=("numpy" "pandas" "gql" "requests" "regex" "PyGithub")
 rust_run="./grrs/target/debug/metric"
 
 is_installed(){
