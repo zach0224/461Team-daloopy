@@ -1,11 +1,11 @@
 #!/bin/bash
 
 export LOG_FILE
-echo $LOG_FILE
+#echo $LOG_FILE
 export LOG_LEVEL
-echo $LOG_LEVEL
+#echo $LOG_LEVEL
 
-echo "First argument: $1"
+#echo "First argument: $1"
 dependencies=("numpy" "pandas" "gql" "requests" "regex" "PyGithub")
 rust_run="./grrs/target/debug/metric"
 
@@ -41,6 +41,7 @@ if [ "$0" == "./run" ] && [ "$1" == "install" ]; then #installs all the dependen
  # Run the build command
  exit 0
 elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files and all the rust code
+  cd grrs
   cargo build
  for file in *.rs; do
   true
