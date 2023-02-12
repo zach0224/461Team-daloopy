@@ -18,8 +18,11 @@ pub fn main(){
     let task = &args[1]; //stores what instruction will be run
     let log_path = &args[2]; //stores what instruction will be run
     let temp = &args[3]; //stores what instruction will be run
-
     let log_level: i32 = temp.parse::<i32>().unwrap();
+    handle_url_file(task.to_string(), log_path.to_string(), log_level);
+}
+
+pub fn handle_url_file(task: String, log_path: String, log_level: i32){
     let level: LevelFilter;
     if log_level == 2 {
         level = LevelFilter::Debug;
