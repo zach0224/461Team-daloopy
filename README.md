@@ -4,7 +4,7 @@ outputs a sorted list of package URLs along with their scores for bus factor, re
 
 This is Part 1 of the semester project for ECE461 (Spring 2023) at Purdue University.
 
-## The Team
+## The team
 Jason Jones  
 Anonya Mitra  
 Dalilah Vaquera  
