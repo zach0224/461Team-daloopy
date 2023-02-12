@@ -1,5 +1,5 @@
 run:
-	./target/debug/run URLs.txt
+	./target/debug/metric URLs.txt
 
 build:
 	cargo build
