@@ -22,7 +22,7 @@ pub fn main(){
     handle_url_file(task.to_string(), log_path.to_string(), log_level);
 }
 
-pub fn handle_url_file(task: String, log_path: String, log_level: i32){
+pub fn handle_url_file(url_file_path: String, log_path: String, log_level: i32){
     let level: LevelFilter;
     if log_level == 2 {
         level = LevelFilter::Debug;
@@ -42,9 +42,9 @@ pub fn handle_url_file(task: String, log_path: String, log_level: i32){
         }
     }
 
-    info!("URL File to run {}", task);
+    info!("URL File to run {}", url_file_path);
 
-    let path = Path::new(task.as_str());
+    let path = Path::new(url_file_path.as_str());
     let file_result = File::open(path); // Open the path in read-only mode, returns `io::Result<File>`
     // error handling
     let _file = match file_result  {
