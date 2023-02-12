@@ -85,3 +85,34 @@ pub fn handle_url_file(url_file_path: String, log_path: String, log_level: i32){
     };
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_main() {
+        let _args = vec![
+            "program_name".to_owned(),
+            "task".to_owned(),
+            "log_path".to_owned(),
+            "3".to_owned(),
+        ];
+
+        let result = handle_url_file("task".to_owned(), "log_path".to_owned(), 3);
+        assert_eq!(result, ());
+    }
+
+    #[test]
+    fn test_handle_url_file() {
+        let url_file_path = "URLs.txt".to_owned();
+        let log_path = "log.txt".to_owned();
+        let log_level = 2;
+
+        let result = handle_url_file(url_file_path, log_path, log_level);
+
+        // Perform your assertions here.
+        // For example:
+        assert_eq!(result, ());
+    }
+}
+
