@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export LOG_FILE
+echo $LOG_FILE
+export LOG_LEVEL
+echo $LOG_LEVEL
+
 echo "First argument: $1"
 dependencies=("numpy" "pandas" )
 rust_run="./grrs/target/debug/metric"
@@ -52,7 +57,9 @@ elif [ "$0" == "./run" ] && [[ "$1" == *.txt ]]; then
   exit 1
  fi
  UrlFile=$(realpath "$1")
- $rust_run "$UrlFile"
+ $rust_run "$UrlFile" "$LOG_FILE" "$LOG_LEVEL"
+
+
 #elif ["$0" == "./run" ] && [ "$1" == "test" ]; then
  #test_file = "test.txt"
  #./metric test_file
