@@ -79,11 +79,11 @@ def getRestData(owner, repo):
                 if key in licenseStr:
                   license_score = val
           else:
-            print("Request failed with status code:", response.status_code)
+            print("REST README.md Request failed with status code:", response.status_code)
       else:
         license_score = 1 
     else:
-      print("Request failed with status code:", response.status_code)
+      print("REST Content Request failed with status code:", response.status_code)
     
     # making fourth request for contributors and their commits/contributions
     contributeURL = "https://api.github.com/repos/{}/{}/contributors?per_page=10".format(owner, repo)
@@ -95,9 +95,9 @@ def getRestData(owner, repo):
       for i in range(len(pretty_people)):
         commits_sum += pretty_people[i]["contributions"]
     else:
-      print("Request failed with status code:", response.status_code)
+      print("REST Contributors Request failed with status code:", response.status_code)
   else:
-    print("Request failed with status code:", response.status_code)
+    print("REST Main Request failed with status code:", response.status_code)
 
   return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, commits_sum
 
