@@ -6,7 +6,7 @@ export LOG_LEVEL
 #echo $LOG_LEVEL
 
 #echo "First argument: $1"
-dependencies=("numpy" "pandas" "gql" "requests" "regex" "PyGithub" "requests_toolbelt")
+dependencies=("numpy" "pandas" "gql" "requests" "regex" "PyGithub" "requests_toolbelt" "coverage")
 rust_run="./grrs/target/debug/metric"
 
 is_installed(){
@@ -38,6 +38,7 @@ if [ "$0" == "./run" ] && [ "$1" == "install" ]; then #installs all the dependen
     fi
   done
  #cargo build
+ cargo install rustfilt
  # Run the build command
  exit 0
 elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files and all the rust code
