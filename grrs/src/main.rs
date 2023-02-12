@@ -6,7 +6,8 @@ mod package;
 use package::Package;
 use package::URL;
 
-fn main() {
+
+pub extern "C" fn main() -> i32{
     let args: Vec<String> = env::args().collect(); //returns an iterator
 
     let task = &args[1]; //stores what instruction will be run
@@ -18,6 +19,7 @@ fn main() {
         "test" => test(),
         _ => handle_file(task.as_str()),
     }
+    return 1;
 }
 fn install(){
     println!("In install");
