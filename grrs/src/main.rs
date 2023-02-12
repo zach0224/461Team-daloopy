@@ -48,43 +48,17 @@ fn handle_file(urlfile:&str){
                 // initialize object
                 // might not be needed
                 let obj = Package {
-                    total_score: -1,
-                    bus_factor: -1,
-                    responsiveness: -1,
-                    license: false,
-                    correctness: -1,
-                    ramp: -1,
+                    total_score: -1.0,
+                    bus_factor: -1.0,
+                    responsiveness: -1.0,
+                    license: -1.0,
+                    correctness: -1.0,
+                    ramp: -1.0,
                     url: URL::new(line), // send in URL
                 };
 
-                obj.print_output()
-                
-                // convert url npm to github (before or after using API?)
-                // struct & auth -> tmw office hours Anonya & William 
-                // overloading -> Will
-
-                // npm to github url -> Jason 
-                // classes updating (package.rs clean up)
-                // one giant struct with each calculation function (empty)
-                // npm github api in rust (super close)
-                // 
-
-                // graphql in 
-                // 
-
-                // tmw pieceing files together and calc scores
-
-                // get content -> Dalilah
-
-                // call functions
-                // calc_response(); 
-                // calc_license();
-                // calc_bus_factor();
-                // calc_rampup();
-                // calc_correctness(); 
-                // calc_total_score();
-
-
+                obj.print_output();
+                obj.calc_metrics(urlfile);
             }
         }
         Err(err) => panic!("Problem opening the file: {:?}", err),
