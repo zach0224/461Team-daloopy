@@ -1,3 +1,4 @@
+import unittest
 import gql
 import json
 from gql.transport.requests import RequestsHTTPTransport
@@ -5,7 +6,6 @@ import os
 import re
 import requests
 import base64
-import logging
 
 def getRestData(owner, repo):
 
@@ -80,11 +80,11 @@ def getRestData(owner, repo):
                 if key in licenseStr:
                   license_score = val
           else:
-            logging.debug("REST README.md Request failed with status code:", response.status_code)
+            print("REST README.md Request failed with status code:", response.status_code)
       else:
         license_score = 1.0
     else:
-      logging.debug("REST Content Request failed with status code:", response.status_code)
+      print("REST Content Request failed with status code:", response.status_code)
     
     # making fourth request for contributors and their commits/contributions
     contributeURL = "https://api.github.com/repos/{}/{}/contributors?per_page=10".format(owner, repo)
@@ -96,13 +96,11 @@ def getRestData(owner, repo):
       for i in range(len(pretty_people)):
         commits_sum += pretty_people[i]["contributions"]
     else:
-      logging.debug("REST Contributors Request failed with status code:", response.status_code)
+      print("REST Contributors Request failed with status code:", response.status_code)
   else:
-    logging.debug("REST Main Request failed with status code:", response.status_code)
+    print("REST Main Request failed with status code:", response.status_code)
 
   return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, commits_sum
-
- 
 
 def getGqlData(owner, repo):
   token = os.getenv("GITHUB_TOKEN")   # get personal github api token
@@ -196,19 +194,80 @@ def getData(owner_repo):
     data["license_score"] = license_score
     return json.dumps(data)
 
-def config_logging():
-  filepath = os.getenv("LOG_FILE") #authentication 
-  log_level = os.getenv("LOG_LEVEL") #authentication
-  if(log_level == 1):
-    log_level = logging.INFO
-  elif(log_level == 2):
-    log_level = logging.DEBUG
-  else:
-    log_level = logging.CRITICAL
-  try:
-    logging.basicConfig(filename= "", level=log_level)
-  except:
-    logging.basicConfig(level=log_level)
+class TestGetOwnerRepo(unittest.TestCase):  
+    def test_get_owner_repo_success1(self):
+        actual = getOwnerRepo("nullivex/nodist")
+        expected = ("nullivex", "nodist")
+        self.assertEqual(actual, expected)
+    
+    def test_get_owner_repo_success2(self):
+        actual = getOwnerRepo("nullivex/nodist/")
+        expected = ("nullivex", "nodist")
+        self.assertEqual(actual, expected)
+    
+    def test_get_owner_repo_success3(self):
+        actual = getOwnerRepo("/nullivex/nodist/")
+        expected = ("nullivex", "nodist")
+        self.assertEqual(actual, expected)
 
-config_logging()
+    def test_get_owner_repo_on_purpose_fail(self):
+        actual = getOwnerRepo("/null/ivex/nod/ist/")
+        correct = ("nullivex", "nodist")
+        self.assertNotEqual(actual, correct)
 
+
+class TestGetRestData(unittest.TestCase):
+    def test_get_rest_data_success(self):
+        actual = getRestData("cloudinary", "cloudinary_npm")
+        expected = (1.0, 1.0, False, False, False, True, 418)
+        self.assertEqual(actual, expected)
+    
+    def test_get_rest_data_exception_url(self):
+        with self.assertRaises(requests.exceptions.HTTPError) as exception_context:
+            getRestData("package", "cloudinary_npm")
+        self.assertEqual(
+            str(exception_context.exception),
+            "404 Client Error: Not Found for url: https://api.github.com/repos/package/cloudinary_npm"
+        )
+    
+    def test_get_rest_data_on_purpose_fail(self):
+      # actual = getRestData("cloudinary", "cloudinary_npm", "extra")
+      # expected = (1.0, 1.0, False, False, False, True, 418)
+      # self.assertNotEqual(actual, expected)
+      with self.assertRaises(TypeError) as exception_context:
+            getRestData("cloudinary", "cloudinary_npm", "extra")
+      self.assertEqual(
+          str(exception_context.exception),
+          "getRestData() takes 2 positional arguments but 3 were given"
+      )
+
+class TestGetGqlData(unittest.TestCase):
+    def test_get_gql_data_success(self):
+        actual = getGqlData("cloudinary", "cloudinary_npm")
+        expected = {'open_issues': 11, 'closed_issues': 241, 'total_commits': 736}
+        self.assertEqual(actual, expected)
+
+    def test_get_gql_data_on_purpose_fail(self):
+        # actual = getGqlData("cloudinary", "lodash")
+        # expected = {'open_issues': 11, 'closed_issues': 241, 'total_commits': 736}
+        # self.assertNotEqual(actual, expected)
+        with self.assertRaises(gql.transport.exceptions.TransportQueryError) as exception_context:
+            getGqlData("cloudinary", "lodash")
+        self.assertEqual(
+            str(exception_context.exception),
+            '''{'type': 'NOT_FOUND', 'path': ['repository'], 'locations': [{'line': 2, 'column': 3}], 'message': "Could not resolve to a Repository with the name 'cloudinary/lodash'."}'''
+        )
+
+class TestGetData(unittest.TestCase):
+    def test_get_data_success(self):
+        actual = getData("lodash/lodash")
+        expected = json.dumps({"open_issues": 313, "closed_issues": 3784, "total_commits": 8005, "has_readme": True, "has_wiki": True, "has_pages": False, "has_discussions": False, "bus_commits": 7434, "correctness_score": 1.0, "license_score": 1.0})
+        self.assertEqual(actual, expected)
+    def test_get_data_success(self):
+        actual = getData("https://github.com/cloudinary/cloudinary_npm")
+        expected = json.dumps({"open_issues": 11, "closed_issues": 241, "total_commits": 736, "has_readme": True, "has_wiki": False, "has_pages": False, "has_discussions": False, "bus_commits": 418, "correctness_score": 1.0, "license_score": 1.0})
+        self.assertEqual(actual, expected)
+
+if __name__ == '__main__':
+    unittest.main()
+    
