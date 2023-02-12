@@ -31,11 +31,11 @@ def getRestData(owner, repo):
       for i in range(len(pretty_content)): 
         names.append(pretty_content[i]["name"])
 
-      test_score = 0 
+      test_score = 0.0 
       hasREADME = False   
       #if testing dir/file(s) present, set to 1
       if 'test'.casefold() in (name.casefold() for name in names):
-        test_score = 1
+        test_score = 1.0
       # if README in repo  
       if "README.md" in names: 
         hasREADME = True
@@ -45,7 +45,7 @@ def getRestData(owner, repo):
       hasPages = pretty_data["has_pages"]
       
       # checking if license info available through REST API
-      license_score = 0
+      license_score = 0.0
       hasLicense = pretty_data["license"]
       if hasLicense == "False":
         # if not through REST, then present in README (hopefully)
@@ -61,7 +61,7 @@ def getRestData(owner, repo):
           decoded = base64.b64decode(rmbase64)
           decodeStr = decoded.decode()
           # all popular licenses and their compatibility score with LGPL 2.1 as defined 
-          licenses = {"Apache": 0, "MIT": 1, "GNU": 1, "GPL": 1, "LGPL": 1, "MPL": 1, "Eclipse Public License": 0, "BSD": 1, "CDDL": 1}
+          licenses = {"Apache": 0.0, "MIT": 1.0, "GNU": 1.0, "GPL": 1.0, "LGPL": 1.0, "MPL": 1.0, "Eclipse Public License": 0.0, "BSD": 1.0, "CDDL": 1.0}
           license_score = 0.5
 
           #license in README or not mentioned/available in repo
@@ -81,7 +81,7 @@ def getRestData(owner, repo):
           else:
             print("REST README.md Request failed with status code:", response.status_code)
       else:
-        license_score = 1 
+        license_score = 1.0
     else:
       print("REST Content Request failed with status code:", response.status_code)
     
@@ -181,14 +181,11 @@ def getData(owner_repo):
     test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, busTeamCommits = getRestData(owner, repo)
 
     data = gqldata
-    data["hasREADME"] = hasREADME
-    data["hasWiki"] = hasWiki
-    data["hasPages"] = hasPages
-    data["hasDiscussions"] = hasDiscussions
-    data["busTeamCommits"] = busTeamCommits
-    data["testScore"] = test_score
-    data["licenseScore"] = license_score
-    return str(data)
-
-
-# print(getData("expressjs/express"))
+    data["has_readme"] = hasREADME
+    data["has_wiki"] = hasWiki
+    data["has_pages"] = hasPages
+    data["has_discussions"] = hasDiscussions
+    data["bus_commits"] = busTeamCommits
+    data["correctness_score"] = test_score
+    data["license_score"] = license_score
+    return json.dumps(data)
