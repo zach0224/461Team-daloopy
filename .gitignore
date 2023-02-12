@@ -16,3 +16,4 @@ Cargo.lock
 grrs/target/debug/run
 
 *.log
+*.profraw
