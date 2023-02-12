@@ -5,10 +5,11 @@ outputs a sorted list of package URLs along with their scores for bus factor, re
 This is Part 1 of the semester project for ECE461 (Spring 2023) at Purdue University.
 
 ## The Team
-Jason Jones
-Dalilah Vaquera
-Wahab William Akanbi
-Anonya Mitra
+Jason Jones  
+Anonya Mitra  
+Dalilah Vaquera  
+Wahab William Akanbi  
+
 
 ## To run our project
 navigate into the grrs folder and run 
@@ -17,8 +18,8 @@ navigate into the grrs folder and run
     ./run _____
 
 ```
-where _____ is one of the following in this order: install, build, URL_FILE, test
-URL_FILE is the absolute location of a file consisting of an ASCII-encoded newline-delimited set of URLs
+where _____ is one of the following in this order: install, build, URL_FILE, test  
+URL_FILE is the absolute location of a file consisting of an ASCII-encoded newline-delimited set of URLs  
 
 
 ## Succinct description of data flow
