@@ -6,7 +6,7 @@ export LOG_LEVEL
 #echo $LOG_LEVEL
 
 #echo "First argument: $1"
-dependencies=("numpy" "pandas" "gql" "requests" "regex" "PyGithub")
+dependencies=("numpy" "pandas" "gql" "requests" "regex" "PyGithub" "requests_toolbelt")
 rust_run="./grrs/target/debug/metric"
 
 is_installed(){
@@ -42,6 +42,7 @@ if [ "$0" == "./run" ] && [ "$1" == "install" ]; then #installs all the dependen
  exit 0
 elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files and all the rust code
   cd grrs
+  cargo clean
   cargo build
  for file in *.rs; do
   true
@@ -52,7 +53,7 @@ elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files an
    #python3 -m compileall $file
  done
 elif [ "$0" == "./run" ] && [[ "$1" == *.txt ]]; then
- echo "made it here"
+ #echo "made it here"
  if [ ! -f "$1" ]; then
   echo "Error: The file $1 does not exist."
   exit 1
