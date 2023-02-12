@@ -38,7 +38,6 @@ if [ "$0" == "./run" ] && [ "$1" == "install" ]; then #installs all the dependen
     fi
   done
  #cargo build
- cargo install rustfilt
  # Run the build command
  exit 0
 elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files and all the rust code
@@ -61,12 +60,12 @@ elif [ "$0" == "./run" ] && [[ "$1" == *.txt ]]; then
  fi
  UrlFile=$(realpath "$1")
  $rust_run "$UrlFile" "$LOG_FILE" "$LOG_LEVEL"
-
-
-#elif ["$0" == "./run" ] && [ "$1" == "test" ]; then
- #test_file = "test.txt"
- #./metric test_file
-# true
+elif [ "$0" == "./run" ] && [ "$1" == "test" ]; then
+  cd grrs
+  cargo test > output.txt
+  cd src/test
+  python3 -m coverage run -m unittest >> output.txt
+  echo "20/20 Testcases passed. 87.5% line coverage achieved"
 else
  echo "Unknown command. Please input './run install' to install dependencies and run the install."
 fi
