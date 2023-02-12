@@ -5,6 +5,7 @@ import os
 import re
 import requests
 import base64
+import logging
 
 def getRestData(owner, repo):
 
@@ -79,11 +80,11 @@ def getRestData(owner, repo):
                 if key in licenseStr:
                   license_score = val
           else:
-            print("REST README.md Request failed with status code:", response.status_code)
+            logging.debug("REST README.md Request failed with status code:", response.status_code)
       else:
         license_score = 1.0
     else:
-      print("REST Content Request failed with status code:", response.status_code)
+      logging.debug("REST Content Request failed with status code:", response.status_code)
     
     # making fourth request for contributors and their commits/contributions
     contributeURL = "https://api.github.com/repos/{}/{}/contributors?per_page=10".format(owner, repo)
@@ -95,9 +96,9 @@ def getRestData(owner, repo):
       for i in range(len(pretty_people)):
         commits_sum += pretty_people[i]["contributions"]
     else:
-      print("REST Contributors Request failed with status code:", response.status_code)
+      logging.debug("REST Contributors Request failed with status code:", response.status_code)
   else:
-    print("REST Main Request failed with status code:", response.status_code)
+    logging.debug("REST Main Request failed with status code:", response.status_code)
 
   return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, commits_sum
 
@@ -195,15 +196,19 @@ def getData(owner_repo):
     data["license_score"] = license_score
     return json.dumps(data)
 
-# test, lic, hw, hd, hp, hrm, cs = getRestData("package", "cloudinary_npm")
-# print(f"{test} {lic} {hw} {hd} {hp} {hrm} {cs}")
+def config_logging():
+  filepath = os.getenv("LOG_FILE") #authentication 
+  log_level = os.getenv("LOG_LEVEL") #authentication
+  if(log_level == 1):
+    log_level = logging.INFO
+  elif(log_level == 2):
+    log_level = logging.DEBUG
+  else:
+    log_level = logging.CRITICAL
+  try:
+    logging.basicConfig(filename= "", level=log_level)
+  except:
+    logging.basicConfig(level=log_level)
 
-# dataql = getGqlData("cloudinary", "cloudinary_npm")
-# print(dataql)
+config_logging()
 
-result = getData("https://github.com/cloudinary/cloudinary_npm")
-print(result)
-
-# own, rep = getOwnerRepo("lodashlodash")
-# print(own)
-# print(rep)
