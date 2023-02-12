@@ -5,6 +5,7 @@ import os
 import re
 import requests
 import base64
+import logging
 
 def getRestData(owner, repo):
 
@@ -189,3 +190,17 @@ def getData(owner_repo):
     data["correctness_score"] = test_score
     data["license_score"] = license_score
     return json.dumps(data)
+
+def config_logging():
+  filepath = os.getenv("LOG_FILE") #authentication 
+  log_level = os.getenv("LOG_LEVEL") #authentication
+  if(log_level == 1):
+    log_level = logging.INFO
+  elif(log_level == 2):
+    log_level = logging.DEBUG
+  else:
+    log_level = logging.CRITICAL
+  try:
+    logging.basicConfig(filename= "", level=log_level)
+  except:
+    logging.basicConfig(filename= "", level=log_level)
