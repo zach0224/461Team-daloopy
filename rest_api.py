@@ -4,7 +4,6 @@ import os
 import base64
 import re
 
-###### getRestData(owner, repo)
 def getRestData(owner, repo):
 
     token = os.getenv("GITHUB_TOKEN")
@@ -66,4 +65,4 @@ def getRestData(owner, repo):
         print("Request failed with status code:", response.status_code)
 
     return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME
-    
+ 

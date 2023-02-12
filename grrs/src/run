@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+# Check if the script is not executable
+if [ ! -x "$0" ]; then
+ # Make the script executable
+ chmod +x "$0"
+ # Re-run the script
+ exec "$0" "$@"
+fi
+
+
+# Check if the command is ./run build
+if [ "$0" == "./run" ] && [ "$1" == "install" ]; then #installs all the dependencies in rust
+ # Install dependencies using pip
+ pip3 install --user -q -r requirements.txt
+ # Run the build command
+ ./run install
+ exit 0
+elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files and all the rust code
+ for file in *.rs; do
+   rustc --crate-type cdylib $file
+ done
+ for file in *.py; do
+   python -m compileall $file
+ done
+
+
+elif ["$0" == "./run"] && ["$1" == "test"]; then
+ test_file = "test.txt"
+ ./metric test_file 
+elif [ "$0" == "./run" ] && [ "$1" == "" ]; then
+ UrlFile=$(realpath "$1")
+ ./metric "$UrlFile"
+else
+ echo "Unknown command. Please input './run install' to install dependencies and run the install."
+fi

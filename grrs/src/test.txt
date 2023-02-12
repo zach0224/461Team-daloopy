@@ -1,0 +1,3 @@
+https://www.npmjs.com/package/cordova-plugin-file-opener
+https://github.com/godotengine/godot
+https://www.npmjs.com/package/karma
