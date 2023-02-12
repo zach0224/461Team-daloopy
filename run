@@ -1,0 +1,62 @@
+#!/bin/bash
+
+echo "First argument: $1"
+dependencies=("numpy" "pandas" )
+rust_run="./grrs/target/debug/metric"
+
+is_installed(){
+    if pip show "$1" > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+
+}
+
+# Check if the script is not executable
+if [ ! -x "$0" ]; then
+ # Make the script executable
+ chmod +x "$0"
+ # Re-run the script
+ exec "$0" "$@"
+fi
+
+# Check if the command is ./run build
+if [ "$0" == "./run" ] && [ "$1" == "install" ]; then #installs all the dependencies in rust
+ # Install dependencies using pip
+ #pip3 install --user -q -r requirements.txt
+  for dependency in "${dependencies[@]}"; do
+    if is_installed "$dependency"; then
+      true
+    else
+      pip3 install --user "$dependency"
+    fi
+  done
+ #cargo build
+ # Run the build command
+ exit 0
+elif [ "$0" == "./run" ] && [ "$1" == "build" ]; then #compiles wrapper files and all the rust code
+  cargo build
+ for file in *.rs; do
+  true
+   #rustc --crate-type cdylib $file
+ done
+ for file in *.py; do
+  true
+   #python3 -m compileall $file
+ done
+elif [ "$0" == "./run" ] && [[ "$1" == *.txt ]]; then
+ echo "made it here"
+ if [ ! -f "$1" ]; then
+  echo "Error: The file $1 does not exist."
+  exit 1
+ fi
+ UrlFile=$(realpath "$1")
+ $rust_run "$UrlFile"
+#elif ["$0" == "./run" ] && [ "$1" == "test" ]; then
+ #test_file = "test.txt"
+ #./metric test_file
+# true
+else
+ echo "Unknown command. Please input './run install' to install dependencies and run the install."
+fi
