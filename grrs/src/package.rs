@@ -132,7 +132,7 @@ impl URLHandler {
             let owner_repo = GIT_RE.captures(url).unwrap();
             println!("{} is the owner repo!", &owner_repo[1]);
             (&owner_repo[1]).to_string()
-        } else {
+        } else if NPM_RE.is_match(url) {
             println!("{} is NOT a github URL!", url);
             let cap = NPM_RE.captures(url).unwrap();
             let npm_url = format!("https://registry.npmjs.org/{}", &cap[1]);
@@ -142,6 +142,8 @@ impl URLHandler {
             let owner_repo = GIT_NPM_RE.captures(&git_url_from_npm).unwrap();
             println!("{} is the owner repo!", &owner_repo[1]);
             (&owner_repo[1]).to_string()
+        } else {
+            "hello".to_string()
         }
     }
     pub fn get_url(&self) -> String{

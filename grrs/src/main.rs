@@ -1,21 +1,47 @@
 use std::env;
 use std::path::Path;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, BufWriter, Write};
 mod package;
 use package::Package;
 use package::PackageJSON;
 use pyo3::prelude::*;
 use std::collections::BinaryHeap;
 use serde_json;
-
+use log::LevelFilter;
+use log::{info};
 
 pub fn main(){
 
     let args: Vec<String> = env::args().collect(); //returns an iterator
 
     let task = &args[1]; //stores what instruction will be run
-    println!("File to run {}", task);
+    let log_path = &args[2]; //stores what instruction will be run
+    let temp = &args[3]; //stores what instruction will be run
+
+    let log_level: i32 = temp.parse::<i32>().unwrap();
+    let level: LevelFilter;
+    if log_level == 2 {
+        level = LevelFilter::Debug;
+    } else if log_level == 1 {
+        level = LevelFilter::Info;
+    } else {
+        level = LevelFilter:: Off;
+    }
+
+    let result = File::create(&log_path);
+    match result {
+        Ok(..) => {
+            simple_logging::log_to_file(log_path, level);
+            info!("Simple log within result")
+        }
+        Err(_e) => {
+            simple_logging::log_to_stderr(level);
+        }
+    }
+
+    info!("Simple Log in main!");
+    info!("File to run {}", task);
 
     let path = Path::new(task.as_str());
     let file_result = File::open(path); // Open the path in read-only mode, returns `io::Result<File>`
@@ -27,15 +53,15 @@ pub fn main(){
             let mut heap = BinaryHeap::<Package>::new();
             for (index, line) in reader.lines().enumerate() {
                 let line = line.unwrap(); // Ignore errors.
-                println!("{}. {}", index + 1, line);
+                info!("{}. {}", index + 1, line);
 
                 // initialize object
                 // might not be needed
                 let mut package = Package::new(line);
                 let python_code = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/api.py"));
 
-                println!("Constructed Package");
-                println!("Running Python:");
+                info!("Constructed Package");
+                info!("Running Python:");
                 let result = Python::with_gil(|py| -> Result<String, PyErr> {
                     let code = PyModule::from_code(py, python_code, "", "").unwrap();
                     let temp: String = code.getattr("getData")?.call1((package.url.get_owner_repo(),))?.extract()?;
@@ -56,3 +82,4 @@ pub fn main(){
         Err(err) => panic!("Problem opening the file: {:?}", err),
     };
 }
+
