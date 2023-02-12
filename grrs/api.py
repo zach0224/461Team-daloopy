@@ -1,13 +1,3 @@
-use std::env;
-use std::path::Path;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-mod package;
-use package::Package;
-use package::URL;
-use pyo3::prelude::*;
-
-static API_PYTHON: &str = r#"
 import gql
 import json
 from gql.transport.requests import RequestsHTTPTransport
@@ -151,69 +141,19 @@ def getOwnerRepo(url):
   repo = parts[1]
   return owner, repo
 
-def getData(*args):
-  owner_repo = args[0]
-  owner,repo = getOwnerRepo(owner_repo)
-  gqldata = getGqlData(owner, repo)
-  test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME = getRestData(owner, repo)
+def getData(owner_repo):
+    owner,repo = getOwnerRepo(owner_repo)
+    gqldata = getGqlData(owner, repo)
+    test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME = getRestData(owner, repo)
 
-  data = gqldata
-  data["hasREADME"] = hasREADME
-  data["hasWiki"] = hasWiki
-  data["hasPages"] = hasPages
-  data["hasDiscussions"] = hasDiscussions
-  data["testScore"] = test_score
-  data["licenseScore"] = license_score
-  print(str(data))
-
-"#;
-
-pub fn main(){
-
-    let args: Vec<String> = env::args().collect(); //returns an iterator
-
-    let task = &args[1]; //stores what instruction will be run
-    println!("File to run {}", task);
-
-    let path = Path::new(task.as_str());
-    let file_result = File::open(path); // Open the path in read-only mode, returns `io::Result<File>`
-
-    // error handling
-    let _file = match file_result  {
-        Ok(_file) => {
-            let reader = BufReader::new(_file); 
-            for (index, line) in reader.lines().enumerate() {
-                let line = line.unwrap(); // Ignore errors.
-                println!("{}. {}", index + 1, line);
-
-                // initialize object
-                // might not be needed
-                let obj = Package {
-                    total_score: -1.0,
-                    bus_factor: -1.0,
-                    responsiveness: -1.0,
-                    license: -1.0,
-                    correctness: -1.0,
-                    ramp: -1.0,
-                    url: URL::new(line), // send in URL
-                };
-
-                println!("Constructed Package");
-                println!("Running Python:");
-                Python::with_gil(|py| -> PyResult<()> {
-                    let app = PyModule::from_code(py, &API_PYTHON, "", "")?;
-                    let new_app: Py<PyAny> = app.getattr("getData")?.into();
-                    new_app.call1(py, (obj.url.get_owner_repo(),))?;
-
-                    Ok(())
-                });
-                println!("Above is the JSON output\n")
-
-            }
-        }
-        Err(err) => panic!("Problem opening the file: {:?}", err),
-    };
-}
+    data = gqldata
+    data["hasREADME"] = hasREADME
+    data["hasWiki"] = hasWiki
+    data["hasPages"] = hasPages
+    data["hasDiscussions"] = hasDiscussions
+    data["testScore"] = test_score
+    data["licenseScore"] = license_score
+    return str(data)
 
 
-
+# print(getData("expressjs/express"))

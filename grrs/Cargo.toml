@@ -11,3 +11,4 @@ regex = "1"
 lazy_static = "1.4.0"
 serde = { version = "1.0", features = ["derive"]}
 serde_json = "1.0.93"
+pyo3 = { version = "0.18.1", features = ["auto-initialize"] }
