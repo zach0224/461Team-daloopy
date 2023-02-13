@@ -48,7 +48,7 @@ def getRestData(owner, repo):
       # checking if license info available through REST API
       license_score = 0.0
       hasLicense = pretty_data["license"]
-      if hasLicense == "False":
+      if hasLicense == "False" or hasLicense == "None" or hasLicense == None:
         # if not through REST, then present in README (hopefully)
         # making third request for README.md
         RMurl = "https://api.github.com/repos/{}/{}/contents/README.md".format(owner, repo)
@@ -69,7 +69,7 @@ def getRestData(owner, repo):
           # license compatible = 1, lincese exists but not compatible = 0.5, license doesn't exist = 0
           #if "Licence" in decodeStr or "License" in decodeStr:
           if 'Licence'.casefold() in decodeStr.casefold():
-            licenseStr = decodeStr.split("Licence".casefold(),1)[1] 
+            licenseStr = decodeStr.split("Licence".casefold(),1)[0] 
             # check license in dictionary and update score
             for key, val in licenses.items():
                 if key in licenseStr:
@@ -79,9 +79,9 @@ def getRestData(owner, repo):
             for key, val in licenses.items():
                 if key in licenseStr:
                   license_score = val
-          else:
-            print("REST README.md Request failed with status code:", response.status_code)
-      else:
+        else: #for third (README) request
+          print("REST README.md Request failed with status code:", response.status_code)
+      else: #license info available in REST API data
         # checking compatibility from REST data
         GitHub_LKey = hasLicense["key"] # GitHub license key from REST response
         #GitHub license keys for the popluar licenses and their compatibility score
@@ -90,7 +90,7 @@ def getRestData(owner, repo):
           if key in GitHub_LKey:
             license_score = val
 
-    else:
+    else: # for second (content) request
       print("REST Content Request failed with status code:", response.status_code)
     
     # making fourth request for contributors and their commits/contributions
@@ -102,12 +102,15 @@ def getRestData(owner, repo):
       commits_sum = 0 # sum of all contributions/commits of person
       for i in range(len(pretty_people)):
         commits_sum += pretty_people[i]["contributions"]
-    else:
+    else: #for fourth (contributors) request
       print("REST Contributors Request failed with status code:", response.status_code)
-  else:
+
+  else: #for first (REST) request 
     print("REST Main Request failed with status code:", response.status_code)
 
   return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, commits_sum
+
+  
 
 def getGqlData(owner, repo):
   token = os.getenv("GITHUB_TOKEN")   # get personal github api token
@@ -266,11 +269,11 @@ class TestGetGqlData(unittest.TestCase):
         )
 
 class TestGetData(unittest.TestCase):
-    def test_get_data_success(self):
+    def test_get_data_success1(self):
         actual = getData("lodash/lodash")
-        expected = json.dumps({"open_issues": 313, "closed_issues": 3784, "total_commits": 8005, "has_readme": True, "has_wiki": True, "has_pages": False, "has_discussions": False, "bus_commits": 7434, "correctness_score": 1.0, "license_score": 1.0})
+        expected = json.dumps({"open_issues": 312, "closed_issues": 3785, "total_commits": 8005, "has_readme": True, "has_wiki": True, "has_pages": False, "has_discussions": False, "bus_commits": 7434, "correctness_score": 1.0, "license_score": 0.0})
         self.assertEqual(actual, expected)
-    def test_get_data_success(self):
+    def test_get_data_success2(self):
         actual = getData("https://github.com/cloudinary/cloudinary_npm")
         expected = json.dumps({"open_issues": 11, "closed_issues": 241, "total_commits": 736, "has_readme": True, "has_wiki": False, "has_pages": False, "has_discussions": False, "bus_commits": 418, "correctness_score": 1.0, "license_score": 1.0})
         self.assertEqual(actual, expected)

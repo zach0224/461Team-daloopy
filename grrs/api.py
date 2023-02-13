@@ -48,7 +48,7 @@ def getRestData(owner, repo):
       # checking if license info available through REST API
       license_score = 0.0
       hasLicense = pretty_data["license"]
-      if hasLicense == "False":
+      if hasLicense == "False" or hasLicense == "None" or hasLicense == None:
         # if not through REST, then present in README (hopefully)
         # making third request for README.md
         RMurl = "https://api.github.com/repos/{}/{}/contents/README.md".format(owner, repo)
@@ -69,7 +69,7 @@ def getRestData(owner, repo):
           # license compatible = 1, lincese exists but not compatible = 0.5, license doesn't exist = 0
           #if "Licence" in decodeStr or "License" in decodeStr:
           if 'Licence'.casefold() in decodeStr.casefold():
-            licenseStr = decodeStr.split("Licence".casefold(),1)[1] 
+            licenseStr = decodeStr.split("Licence".casefold(),1)[0] 
             # check license in dictionary and update score
             for key, val in licenses.items():
                 if key in licenseStr:
@@ -79,16 +79,17 @@ def getRestData(owner, repo):
             for key, val in licenses.items():
                 if key in licenseStr:
                   license_score = val
-          else: #for third (README) request
-            logging.debug("REST README.md Request failed with status code:", response.status_code)
-        else: #license info available in REST API data
-          # checking compatibility from REST data
-          GitHub_LKey = hasLicense["key"] # GitHub license key from REST response
-          #GitHub license keys for the popluar licenses and their compatibility score
-          license_keys = {"apache": 0.0, "mit": 1.0, "gpl": 1.0, "lgpl": 1.0, "ms-pl": 1.0, "epl": 0.0, "bsd": 1.0, "cddl": 0.0}
-          for key,val in license_keys.items():
-            if key in GitHub_LKey:
-              license_score = val
+        else: #for third (README) request
+          logging.debug("REST README.md Request failed with status code:", response.status_code)
+      else: #license info available in REST API data
+        # checking compatibility from REST data
+        GitHub_LKey = hasLicense["key"] # GitHub license key from REST response
+        #GitHub license keys for the popluar licenses and their compatibility score
+
+        license_keys = {"apache": 0.0, "mit": 1.0, "gpl": 1.0, "lgpl": 1.0, "ms-pl": 1.0, "epl": 0.0, "bsd": 1.0, "cddl": 0.0}
+        for key,val in license_keys.items():
+          if key in GitHub_LKey:
+            license_score = val
 
     else: # for second (content) request
       logging.debug("REST Content Request failed with status code:", response.status_code)
@@ -219,4 +220,3 @@ def config_logging():
     logging.basicConfig(level=log_level)
 
 config_logging()
-
