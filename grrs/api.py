@@ -62,7 +62,7 @@ def getRestData(owner, repo):
           decoded = base64.b64decode(rmbase64)
           decodeStr = decoded.decode()
           # all popular licenses and their compatibility score with LGPL 2.1 as defined 
-          licenses = {"Apache": 0.0, "MIT": 1.0, "GNU": 1.0, "GPL": 1.0, "LGPL": 1.0, "MPL": 1.0, "Eclipse Public License": 0.0, "BSD": 1.0, "CDDL": 1.0}
+          licenses = {"Apache": 0.0, "MIT": 1.0, "GPL": 1.0, "LGPL": 1.0, "MPL": 1.0, "Eclipse Public License": 0.0, "BSD": 1.0, "CDDL": 0.0}
           license_score = 0.5
 
           #license in README or not mentioned/available in repo
@@ -82,7 +82,14 @@ def getRestData(owner, repo):
           else:
             logging.debug("REST README.md Request failed with status code:", response.status_code)
       else:
-        license_score = 1.0
+        # checking compatibility from REST data
+        GitHub_LKey = hasLicense["key"] # GitHub license key from REST response
+        #GitHub license keys for the popluar licenses and their compatibility score
+        license_keys = {"apache": 0.0, "mit": 1.0, "gpl": 1.0, "lgpl": 1.0, "ms-pl": 1.0, "epl": 0.0, "bsd": 1.0, "cddl": 0.0}
+        for key,val in license_keys.items():
+          if key in GitHub_LKey:
+            license_score = val
+
     else:
       logging.debug("REST Content Request failed with status code:", response.status_code)
     
@@ -211,4 +218,3 @@ def config_logging():
     logging.basicConfig(level=log_level)
 
 config_logging()
-
