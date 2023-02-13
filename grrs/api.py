@@ -79,18 +79,18 @@ def getRestData(owner, repo):
             for key, val in licenses.items():
                 if key in licenseStr:
                   license_score = val
-          else:
+          else: #for third (README) request
             logging.debug("REST README.md Request failed with status code:", response.status_code)
-      else:
-        # checking compatibility from REST data
-        GitHub_LKey = hasLicense["key"] # GitHub license key from REST response
-        #GitHub license keys for the popluar licenses and their compatibility score
-        license_keys = {"apache": 0.0, "mit": 1.0, "gpl": 1.0, "lgpl": 1.0, "ms-pl": 1.0, "epl": 0.0, "bsd": 1.0, "cddl": 0.0}
-        for key,val in license_keys.items():
-          if key in GitHub_LKey:
-            license_score = val
+        else: #license info available in REST API data
+          # checking compatibility from REST data
+          GitHub_LKey = hasLicense["key"] # GitHub license key from REST response
+          #GitHub license keys for the popluar licenses and their compatibility score
+          license_keys = {"apache": 0.0, "mit": 1.0, "gpl": 1.0, "lgpl": 1.0, "ms-pl": 1.0, "epl": 0.0, "bsd": 1.0, "cddl": 0.0}
+          for key,val in license_keys.items():
+            if key in GitHub_LKey:
+              license_score = val
 
-    else:
+    else: # for second (content) request
       logging.debug("REST Content Request failed with status code:", response.status_code)
     
     # making fourth request for contributors and their commits/contributions
@@ -102,9 +102,10 @@ def getRestData(owner, repo):
       commits_sum = 0 # sum of all contributions/commits of person
       for i in range(len(pretty_people)):
         commits_sum += pretty_people[i]["contributions"]
-    else:
+    else: #for fourth (contributors) request
       logging.debug("REST Contributors Request failed with status code:", response.status_code)
-  else:
+
+  else: #for first (REST) request 
     logging.debug("REST Main Request failed with status code:", response.status_code)
 
   return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, commits_sum
@@ -218,3 +219,4 @@ def config_logging():
     logging.basicConfig(level=log_level)
 
 config_logging()
+
