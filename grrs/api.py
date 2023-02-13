@@ -220,6 +220,3 @@ def config_logging():
 
 config_logging()
 
-
-test, lic, hw, hd, hp, hrm, cs = getRestData("cloudinary", "cloudinary_npm")
-print(f"{test} {lic} {hw} {hd} {hp} {hrm} {cs}")
