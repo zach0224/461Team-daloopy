@@ -7,6 +7,12 @@ import requests
 import base64
 import logging
 
+# to get the github api data:
+# 1) set your github token in env as 'GITHUB_TOKEN'
+# 2) call getData(url) and pass in the url
+
+
+
 def getRestData(owner, repo):
 
   token = os.getenv("GITHUB_TOKEN") #authentication 
@@ -111,8 +117,6 @@ def getRestData(owner, repo):
 
   return test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, commits_sum
 
- 
-
 def getGqlData(owner, repo):
   token = os.getenv("GITHUB_TOKEN")   # get personal github api token
   headers = {"Authorization": "Token {}".format(token)}
@@ -190,8 +194,9 @@ def getOwnerRepo(url):
     repo = parts[len_parts-2]
   return owner, repo
 
-def getData(owner_repo):
-    owner,repo = getOwnerRepo(owner_repo)
+def getData(url):
+
+    owner,repo = getOwnerRepo(url)
     gqldata = getGqlData(owner, repo)
     test_score, license_score, hasWiki, hasDiscussions, hasPages, hasREADME, busTeamCommits = getRestData(owner, repo)
 

@@ -97,6 +97,7 @@ impl Package {
         debug!("");
     }
 
+    // metric calculation entry point
     pub fn calc_metrics(&mut self, json_in: &String){
         let json: MetricJSON = serde_json::from_str(json_in).expect("Unable to parse JSON");
         self.bus_factor = OrderedFloat(calc_bus_factor(&json));
@@ -120,7 +121,7 @@ impl URLHandler {
 
     pub fn new(url: String) -> URLHandler{
         let owner_repo = URLHandler::determine_owner_repo(&url);
-        URLHandler {url: url.clone(), owner_repo: owner_repo}
+        URLHandler { url: url.clone(), owner_repo: owner_repo }
     }
 
     fn determine_owner_repo(url: &String) -> String{

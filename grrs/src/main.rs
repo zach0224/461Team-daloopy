@@ -23,6 +23,7 @@ pub fn main(){
 }
 
 pub fn handle_url_file(url_file_path: String, log_path: String, log_level: i32){
+    // init logging functions
     let level: LevelFilter;
     if log_level == 2 {
         level = LevelFilter::Debug;
@@ -42,6 +43,8 @@ pub fn handle_url_file(url_file_path: String, log_path: String, log_level: i32){
         }
     }
 
+    // start url processing
+
     info!("URL File to run {}", url_file_path);
 
     let path = Path::new(url_file_path.as_str());
@@ -60,6 +63,8 @@ pub fn handle_url_file(url_file_path: String, log_path: String, log_level: i32){
                 // might not be needed
                 let mut package = Package::new(line);
                 let python_code = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/api.py"));
+
+                // execute python code to obtain metric data
 
                 info!("Constructed Package {}", package.url.get_url());
                 debug!("Running Python");
