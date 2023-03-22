@@ -4,9 +4,6 @@ test:
 build:
 	./run build
 
-install:
-	./run install
-
 source:
 	source ~/.bash_profile
 

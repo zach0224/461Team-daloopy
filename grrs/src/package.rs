@@ -16,28 +16,22 @@ pub struct NpmJSON {
     repository:  HashMap<String, String>,
 }
 
-// OK to have more keys than you match in MetricJSON
-// NOT OK to have less keys that then get turned into a JSON
 #[derive(Deserialize)]
 pub struct MetricJSON {
     pub license_score:  f32,
 
-    // number of issues
     pub open_issues: i32,
     pub closed_issues: i32,
 
-    // ramp-up time
     pub has_wiki: bool,
     pub has_discussions: bool,
     pub has_readme: bool,
     pub has_pages: bool,
 
-    pub total_commits: i32, // total commits in repository
-    pub bus_commits: i32, // total commits that top 10 people committed
+    pub total_commits: i32,
+    pub bus_commits: i32,
 
     pub correctness_score: f32,
-    // OK to have more keys than you match in MetricJSON
-    pub code_review: f32
 }
 
 #[allow(non_snake_case)]
@@ -50,7 +44,6 @@ pub struct PackageJSON {
     pub BusFactor: f32,
     pub ResponsiveMaintainer: f32,
     pub License: f32,
-    pub CodeReview: f32,
 }
 
 impl PackageJSON {
@@ -63,7 +56,6 @@ impl PackageJSON {
             BusFactor: (*package.bus_factor * 100.0).round() / 100.0,
             ResponsiveMaintainer: (*package.responsiveness * 100.0).round() / 100.0,
             License: (*package.license * 100.0).round() / 100.0,
-            CodeReview: (*package.review * 100.0).round() / 100.0
         }
     }
 }
@@ -76,7 +68,6 @@ pub struct Package {
     pub bus_factor: OrderedFloat<f32>,
     pub responsiveness: OrderedFloat<f32>,
     pub license: OrderedFloat<f32>,
-    pub review: OrderedFloat<f32>,
     pub url: URLHandler,
 }
 
@@ -89,10 +80,6 @@ impl Package {
             bus_factor: OrderedFloat(-1.0),
             responsiveness: OrderedFloat(-1.0),
             license: OrderedFloat(-1.0),
-            review: OrderedFloat(-1.0),
-            // creates a new object or instance of a class called "URLHandler"
-            // by calling its constructor function and passing in a parameter called "url". 
-            // The "new" keyword is used to indicate that a new object is being created.
             url: URLHandler::new(url),
         }
     }
@@ -106,27 +93,22 @@ impl Package {
         debug!("ResponsiveMaintainer:   {}", self.responsiveness);
         debug!("Correctness:            {}", self.correctness);
         debug!("Ramp Up Time:           {}", self.ramp_up);
-        debug!("Code Review:            {}", self.review);
         debug!("License Compatibility:  {}", self.license);
         debug!("");
     }
 
     // metric calculation entry point
     pub fn calc_metrics(&mut self, json_in: &String){
-        // we deserialize our json object into MetricJSON struct 
         let json: MetricJSON = serde_json::from_str(json_in).expect("Unable to parse JSON");
         self.bus_factor = OrderedFloat(calc_bus_factor(&json));
         self.responsiveness = OrderedFloat(calc_responsiveness(&json));
         self.correctness = OrderedFloat(json.correctness_score);
         self.ramp_up = OrderedFloat(calc_ramp_up_time(&json));
         self.license = OrderedFloat(json.license_score);
-        self.review = OrderedFloat(json.code_review);
         self.net_score = OrderedFloat(0.4) * self.bus_factor + OrderedFloat(0.15) * (self.responsiveness + self.correctness + self.ramp_up + self.license)
     }
 
 }
-
-
 
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 pub struct URLHandler {
@@ -148,35 +130,22 @@ impl URLHandler {
             static ref NPM_RE:Regex = Regex::new(r#"https://www\.npmjs\.com/package/(.+)"#).unwrap();
             static ref GIT_NPM_RE:Regex = Regex::new(r#".+github\.com/(.+).git"#).unwrap();
         }
-        // Checks if the url is a GitHub URL
         if GIT_RE.is_match(url) {
-            // info!() macro from the log crate to log an informational message.
             info!("{} is a github URL!", url);
             let owner_repo = GIT_RE.captures(url).unwrap();
             info!("{} is the owner repo!", &owner_repo[1]);
-            // return owner_repo pair to "pub fn new(url: String) -> URLHandler{"
             (&owner_repo[1]).to_string()
-        // Checks if the url is a NPM URL
         } else if NPM_RE.is_match(url) {
             info!("{} is NOT a github URL!", url);
             let cap = NPM_RE.captures(url).unwrap();
-            // Interact with npmjs API
             let npm_url = format!("https://registry.npmjs.org/{}", &cap[1]);
             let response = reqwest::blocking::get(npm_url).unwrap();
-
-            // NpmJSON defined as a single repository containing a hashmap
-            // Hashmap: The key is "url", The value is "github url"
             let json = response.json::<NpmJSON>().unwrap();
-            // Get GitHub URL from npm
             let git_url_from_npm = json.repository.get("url").unwrap();
-            // If LogLevel is 2
             debug!("Git URL: {}", &git_url_from_npm);
             let owner_repo = GIT_NPM_RE.captures(&git_url_from_npm).unwrap();
-            // If LogLevel is 1
             info!("{} is the owner repo!", &owner_repo[1]);
-            // return owner_repo pair to "pub fn new(url: String) -> URLHandler{"
             (&owner_repo[1]).to_string()
-        // NEITHER
         } else {
             info!("Supplied URL is not npm or github! Returning Garbage!");
             "GARBAGE".to_string()
@@ -207,7 +176,6 @@ pub fn calc_bus_factor(json: &MetricJSON) -> f32 {
 }
 
 pub fn calc_responsiveness(json: &MetricJSON) -> f32 {
-    // Bayesian Average
     let open: i32 = json.open_issues + 50;
     let closed: i32 = json.closed_issues + 50;
     debug!("open_issues:    {}", &open);
